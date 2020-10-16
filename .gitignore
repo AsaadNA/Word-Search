@@ -1,0 +1,4 @@
+
+src/wordsearch.cpp
+*.pyc
+*.cpp

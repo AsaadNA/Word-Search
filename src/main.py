@@ -1,11 +1,12 @@
 # ========================================================================
 # File: main.py
 # Date: 15-10-2020
-# Creator: Asaad Abbasii 
+# Creator: Asaad Abbasi
 # Notice: (C) Copyright 2020 by Asaad Noman Abbasi All Rights Reserved. 
 #========================================================================
 
 import pygame
+
 from board import Board
 
 class WordSearch:
@@ -14,6 +15,7 @@ class WordSearch:
         pygame.init()
         pygame.font.init()
         pygame.display.set_caption("Word-Search")
+        pygame.mouse.set_cursor(*pygame.cursors.diamond)
         self.window = pygame.display.set_mode((1250,900))
         running = True
         clock = pygame.time.Clock()
@@ -25,7 +27,7 @@ class WordSearch:
             for e in pygame.event.get():
                 if e.type == pygame.QUIT:
                     running = False
-
+                self.board.update(e)
             self.render()
 
     def render(self):
