@@ -1,10 +1,3 @@
-const generateColor = () => {
-   color = []
-   for(var i = 0; i <= 2; i++)
-      color.push(Math.random() * (255 - 0) + 0)
-   return color
-}
-
 const generateLetter = () => {
    var result = '';
    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -22,10 +15,29 @@ class Tile {
       this.x = x;
       this.y = y;
       this.tileSize = 50;
-      this.letterColor = generateColor()
+      this.letterColor = [0,0,0]
       this.letterData = generateLetter()
+      this.filled = false;
+   }
 
-      this.isMouseHovering = false
+   isMouseInside(mouseX,mouseY) {
+      return mouseX > this.x  && mouseX < this.x + this.tileSize && mouseY > this.y && mouseY < this.y + this.tileSize
+   }
+
+   setLetterColor(color) {
+      this.letterColor = color
+   }
+
+   setFilled(data) {
+      this.filled = data;
+   }
+
+   getFilled() {
+      return this.filled;
+   }
+
+   getData() {
+      return this.letterData;
    }
 
    render() {
@@ -41,19 +53,42 @@ class Tile {
 class Board {
 
    constructor() {
+
       this.boardContainer = [];
+      this.wordList = []
+      this.wordLimit = 7
+
       let xx = 0;
       let yy = 0;
       for(var i = 0; i <= 15; i++) {
          for(var j = 0; j <= 15; j++) {
             this.boardContainer.push(new Tile(xx,yy))
-            xx += 50
-         } xx = 0; yy += 50;
-      } this.boardContainer.pop();
+            xx += 55
+         } xx = 0; yy += 55;
+      }
+   }
+
+   mouseReleased() {
+      let completedWord = this.wordList.join();
+      this.wordList = [];
+      console.log("Completed Word: " + completedWord);
+   }
+
+   update(mouseX,mouseY,dragStatus) {
+      if(this.wordList.length == 7) {
+         dragStatus = false
+      } else if(dragStatus == true) {
+         this.boardContainer.forEach((letter) => {
+         if(letter.isMouseInside(mouseX,mouseY) && letter.getFilled() == false) {
+               letter.setFilled(true);
+               letter.setLetterColor([255,0,0]);
+               this.wordList.push(letter.getData()) 
+            }
+         })
+      }
    }
 
    render() {
-      background(0)
       this.boardContainer.forEach((letter) => {
          letter.render()
       })
@@ -63,11 +98,26 @@ class Board {
 ///
 
 let board = new Board();
+let mouseDrag = false;
 
 function setup() {
-   createCanvas(750,750)
+   createCanvas(823,823)
    textSize(35)
    textAlign(CENTER, CENTER);
+   cursor(CROSS);
+}
+
+function mousePressed() {
+   mouseDrag = true;
+}
+
+function mouseReleased() {
+   mouseDrag = false;
+   board.mouseReleased();
+}
+
+function mouseDragged() {
+   if(mouseDrag) board.update(mouseX,mouseY,mouseDrag)
 }
 
 function draw() {
