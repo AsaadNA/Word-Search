@@ -23,11 +23,15 @@ class Tile {
       this.letterColor = [0,0,0]
       this.letterData = " "
       this.filled = false;
+      this.isPartOfCorrectSequence = false;
    }
 
    isMouseInside(mouseX,mouseY) {
       return mouseX > this.x  && mouseX < this.x + this.tileSize && mouseY > this.y && mouseY < this.y + this.tileSize
    }
+
+   setIsPartOf(data) { this.isPartOfCorrectSequence = data; }
+   getIsPartOf() { return this.isPartOfCorrectSequence; }
 
    setFilled(data) { this.filled = data; }
    getFilled()     { return this.filled; }
@@ -164,7 +168,6 @@ class Board {
       }
 
       //generates the puzzle
-
       let count = 0;
       let flag = false;
 
@@ -178,31 +181,46 @@ class Board {
       }
 
       //fill the empty spaces
-
       for(var i = 0 ; i <= 15; i++) {
          for(var j = 0; j <= 15; j++) {
             if(this.boardContainer[i][j].getData() == " ") {
-               this.boardContainer[i][j].setData("*")
+               this.boardContainer[i][j].setData(generateLetter())
             }
          }
       }
 
    }
 
-   mouseReleased() {
-
-
-      for(var i = 0; i <= 15; i++) {
+   clearSelection() {
+       for(var i = 0; i <= 15; i++) {
          for(var j = 0; j <= 15; j++) {
-            if(this.boardContainer[i][j].getFilled()) {
+            if(this.boardContainer[i][j].getFilled() && this.boardContainer[i][j].getIsPartOf() == false) {
                this.boardContainer[i][j].setFilled(false)
             }
          }
       }
+   }
 
-      let completedWord = this.wordList.join();
-      this.wordList = [];
-      console.log("Completed Word: " + completedWord);
+   mouseReleased() {
+
+      //1.join all letters
+      //2.if all letters == genWord
+      //3.all letters of that tile are partOf 
+      //4.set flag of partOf .. so they do not get cleared
+
+      let completedWord = ""
+      this.wordList.forEach((letter) => {
+         completedWord += letter.getData();
+      })
+
+      if(this.genWordList.includes(completedWord)) {
+         this.wordList.forEach((letter) => {
+            letter.setIsPartOf(true);
+         })
+      }
+
+      this.wordList = []
+      this.clearSelection();
    }
 
    update(mouseX,mouseY,dragStatus) {
@@ -214,7 +232,7 @@ class Board {
                let letter = this.boardContainer[i][j];
                if(letter.isMouseInside(mouseX,mouseY) && letter.getFilled() == false) {
                   letter.setFilled(true);
-                  this.wordList.push(letter.getData()) 
+                  this.wordList.push(letter) 
                }  
             }
          }
