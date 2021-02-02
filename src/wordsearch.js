@@ -1,6 +1,6 @@
 const generateLetter = () => {
    var result = '';
-   var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+   var characters = 'abcdefghijklmaopqrstuvwxyz';
    var charactersLength = characters.length;
    for ( var i = 0; i <= 0; i++ ) {
       result += characters.charAt(Math.floor(Math.random() * charactersLength));
@@ -21,7 +21,7 @@ class Tile {
       this.y = y;
       this.tileSize = 50;
       this.letterColor = [0,0,0]
-      this.letterData = ' '
+      this.letterData = " "
       this.filled = false;
    }
 
@@ -52,7 +52,7 @@ class Tile {
 class Board {
 
    placeHorizontal(row,col,word) {
-      for(var i = 0; i <= word.length; i++) {
+      for(var i = 0; i <= word.length-1; i++) {
          this.boardContainer[row][col++].setData(word[i])
       }
    }
@@ -73,7 +73,7 @@ class Board {
    }
 
    placeVertical(row,col,word) {
-      for(var i = 0; i <= word.length; i++) {
+      for(var i = 0; i <= word.length-1; i++) {
          this.boardContainer[row++][col].setData(word[i])
       }
    }
@@ -94,17 +94,17 @@ class Board {
    }
 
    placeDiagonal(row,col,word) {
-      for(var i = 0; i <= word.length; i++) {
+      for(var i = 0; i <= word.length-1; i++) {
          this.boardContainer[row++][col++].setData(word[i])
       }
    }
 
    canPlaceDiagonal(row,col,size) {
-      return (row <= size && col <=-size);
+      return (row <= size && col <= size);
    }
 
    isAllClearDiagonal(row,col,word) {
-      if(this.canPlaceDiagonal(col,word.length)) {
+      if(this.canPlaceDiagonal(row,col,word.length)) {
          for(var i = 0; i <= word.length; i++) {
             if(this.boardContainer[row++][col++].getData() != " ") {
                return false;
@@ -113,7 +113,6 @@ class Board {
          }
       } return true;
    }
-
 
    generatePlace(word) {
 
@@ -164,7 +163,7 @@ class Board {
          } xx = 0; yy += 55;
       }
 
-      //
+      //generates the puzzle
 
       let count = 0;
       let flag = false;
@@ -178,14 +177,26 @@ class Board {
          }
       }
 
+      //fill the empty spaces
+
+      for(var i = 0 ; i <= 15; i++) {
+         for(var j = 0; j <= 15; j++) {
+            if(this.boardContainer[i][j].getData() == " ") {
+               this.boardContainer[i][j].setData("*")
+            }
+         }
+      }
+
    }
 
    mouseReleased() {
 
+
       for(var i = 0; i <= 15; i++) {
          for(var j = 0; j <= 15; j++) {
-            if(this.boardContainer[i][j].getFilled())
+            if(this.boardContainer[i][j].getFilled()) {
                this.boardContainer[i][j].setFilled(false)
+            }
          }
       }
 
